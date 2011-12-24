@@ -1,7 +1,7 @@
 {
   "name": "iso8601",
   "description": "ISO8601 support for the Date object",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "author": "Do <http://do.com>",
   "devDependencies": {
     "coffee-script": "1.2.0",
