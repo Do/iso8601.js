@@ -33,7 +33,7 @@ Examples:
 console.log(Date.parseISO8601("2010-07-20T15:00:00Z"))
 // => Tue Jul 20 2010 08:00:00 GMT-0700 (PDT)
 
-console.log(Date.parse("2010-07-20T15:00:00Z");
+console.log(Date.parse("2010-07-20T15:00:00Z"));
 // => 1307834445456
 ```
 
