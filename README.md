@@ -1,11 +1,14 @@
 iso8601.js
 ==========
 
-Adds [ISO 8601][iso8601] date parsing and formatting to the JavaScript Date
-object. Based on Paul Gallagher's [rfc3339date.js library][rfc3339date.js].
+Partial ECMAScript 5.1 Date object cross-browser polyfill to add
+[ISO 8601][iso8601] support to **Date.parse** and
+**Date.prototype.toISOString**. Originally based on Paul Gallagher's
+[rfc3339date.js library][rfc3339date.js].
 
-Supports only the subset of ISO 8601 described as part of [RFC 3339][rfc3339]
-and the [Date and Time Formats W3C NOTE][w3c-note].
+Supports only the subset of ISO 8601 described in
+[ECMAScript 5.1 section 15.9.4.2][ecmascript], [RFC 3339][rfc3339], and the
+[Date and Time Formats W3C NOTE][w3c-note].
 
 
 ## Usage
@@ -42,19 +45,22 @@ console.log(Date.parse("2010-07-20T15:00:00Z"));
 
 Format ISO 8601 date strings directly from Date instances:
 
-* **toISO8601UTCString** generates an ISO 8601 string in UTC.
-* **toISO8601LocaleString** generates an ISO 8601 string with the offset equal
-  to the browser's local timezone.
+* **Date.prototype.toISOString** generates an ISO 8601 string in UTC.
+* **Date.prototype.toISO8601String** generates an ISO 8601 string with
+  formatting options:
+  * *localTimezone*: Use local timezone with offset or UTC? Defaults to *false*.
+  * *separators*: Include date/time separator? Defaults to *true*.
+  * *milliseconds*: Include milliseconds? Defaults to *true*.
 
 Examples:
 
 ```js
 var date = Date.parseISO8601("2010-07-20T15:00:00Z");
 
-console.log(date.toISO8601UTCString());
-// => "2010-07-20T15:00:00Z"
+console.log(date.toISOString());
+// => "2010-07-20T15:00:00.000Z"
 
-console.log(date.toISO8601LocaleString());
+console.log(date.toISO8601String(true, true, false));
 // => "2010-07-20T08:00:00-07:00"
 ```
 
@@ -67,7 +73,9 @@ Date("...")` to parse strings.
 
 ## Contributing
 
-iso8601.js is written in [CoffeeScript][coffeescript].
+iso8601.js is written in [CoffeeScript][coffeescript]. Use `npm install` to
+install required development packages. Compile minified JavaScript output with
+`make`. Run the test suite via `make test`.
 
 Patches and bug reports are always welcome. Just send a
 [pull request][pullrequests] or file an [issue][issues].
@@ -76,6 +84,7 @@ Patches and bug reports are always welcome. Just send a
 
 [iso8601]:        http://en.wikipedia.org/wiki/ISO_8601
 [rfc3339date.js]: https://github.com/tardate/rfc3339date.js
+[ecmascript]:     http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf
 [rfc3339]:        http://www.ietf.org/rfc/rfc3339.txt
 [w3c-note]:       http://www.w3.org/TR/NOTE-datetime
 [downloads]:      https://github.com/Do/iso8601.js/downloads

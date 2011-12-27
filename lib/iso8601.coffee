@@ -1,26 +1,33 @@
-# iso8601.coffee
+# iso8601.js
 #
-# Partial-polyfill to the Javascript Date object to support the subset of
-# ISO8601 described as part of RFC 3339 and at:
-#   http://www.w3.org/TR/NOTE-datetime
-# Adds string parsing and generation directly to Date. Uses native parsing when
-# available.
+# Partial ECMAScript 5.1 Date object polyfill to support the ISO 8601 format
+# specified in section 15.9.1.15 in Date.parse (section 15.9.4.2) and
+# Date.prototype.toISOString (section 15.9.5.43). ISO 8601 formats from RFC 3339
+# and the W3C Date and Time Formats NOTE (http://www.w3.org/TR/NOTE-datetime)
+# are also supported.
 #
-# Usage:
+# Adds string parsing and formatting functions directly to the native Date
+# object and prototype. Uses native functionality where available.
+#
+# Examples
+#
 #   Date.parse("2010-07-20T15:00:00Z")
-#     => 1307834445456     # milliseconds since Unix epoch
-#   date = Date.parseISO8601("2010-07-20T15:00:00Z")
-#     => Tue Jul 20 2010 08:00:00 GMT-0700 (PDT)     # Date instance
-#   date.toISO8601UTCString()
-#     => "2010-07-20T15:00:00Z"
-#   date.toISO8601LocaleString()
-#     => "2010-07-20T08:00:00-07:00"     #  When run from a browser in PDT
+#   // => 1307834445456
 #
-# Note: Avoid using "new Date(...)" to parse ISO8601 strings since this library
+#   date = Date.parseISO8601("2010-07-20T15:00:00Z")
+#   // => Tue Jul 20 2010 08:00:00 GMT-0700 (PDT)
+#
+#   date.toISOString()
+#   // => "2010-07-20T15:00:00.000Z"
+#
+#   date.toISO8601String(true)
+#   // => "2010-07-20T08:00:00.000-07:00"
+#
+# Note: Avoid using "new Date(...)" to parse ISO 8601 strings since this library
 # does not polyfill the Date constructor.
 #
 #
-# Based on Paul Gallagher's rfc3339date.js library
+# Originally based on Paul Gallagher's rfc3339date.js library
 #   https://github.com/tardate/rfc3339date.js
 # Copyright (c) 2010 Paul GALLAGHER  http://tardate.com
 #
@@ -40,73 +47,88 @@ pad = (number, length = 2) ->
     result = '0' + result
   result
 
-# Unit test to check if browser has native ISO8601 support
-supportsISO8601 = Date.parse?('2011-06-11T23:20:45.456Z') is 1307834445456
+# Unit tests to check native ISO 8601 support
+supportsISOParsing = Date.parse?('2011-06-11T23:20:45.456-0700') is 1307859645456
+supportsISOFormatting = Date::toISOString?
 
 
 
-# Date.prototype.toISO8601UTCString
+# Date.prototype.toISO8601String
 #
-# Date instance method to format the date as ISO8601 / RFC 3339 string (in UTC
-# format).
+# Format the date in ISO 8601 / RFC 3339 with custom rules. With no parameters,
+# output is equivalent to the ECMAScript 5.1 defined Date.prototype.toISOString.
 #
-# Usage: d = new Date().toISO8601UTCString()
-#          => "2010-07-25T11:51:31.427Z"
-# Parameters:
-#   separators   : include date/time separators? (default is true)
-#   milliseconds : include milliseconds? (default is true)
-Date::toISO8601UTCString = (separators = true, milliseconds = true) ->
+# localTimezone - Use local timezone or UTC offset? (default: false, i.e. UTC)
+# separators    - Include date/time separators? (default: true)
+# milliseconds  - Include milliseconds? (default: true)
+#
+# Examples
+#
+#   new Date().toISO8601String(true)
+#   // => "2010-07-25T19:51:31.427+08:00"
+#
+#   new Date().toISO8601String(true)
+#   // => "2010-07-25T19:51:31.427+08:00"
+#
+#   new Date().toISO8601String(true)
+#   // => "2010-07-25T19:51:31.427+08:00"
+#
+Date::toISO8601String = (localTimezone = false, separators = true, milliseconds = true) ->
+  # Raise RangeError for invalid dates
+  timet = @getTime()
+  if timet != timet  # isNaN
+    throw new RangeError 'Invalid date'
+
   dateSeparator = if separators then '-' else ''
   timeSeparator = if separators then ':' else ''
 
   result =
-    this.getUTCFullYear().toString() + dateSeparator +
-    pad(this.getUTCMonth() + 1)      + dateSeparator +
-    pad(this.getUTCDate())           + 'T'           +
-    pad(this.getUTCHours())          + timeSeparator +
-    pad(this.getUTCMinutes())        + timeSeparator +
-    pad(this.getUTCSeconds())
+    if localTimezone
+      @getFullYear().toString() + dateSeparator +
+      pad(@getMonth() + 1)      + dateSeparator +
+      pad(@getDate())           + 'T'           +
+      pad(@getHours())          + timeSeparator +
+      pad(@getMinutes())        + timeSeparator +
+      pad(@getSeconds())
+    else
+      @getUTCFullYear().toString() + dateSeparator +
+      pad(@getUTCMonth() + 1)      + dateSeparator +
+      pad(@getUTCDate())           + 'T' +
+      pad(@getUTCHours())          + timeSeparator +
+      pad(@getUTCMinutes())        + timeSeparator +
+      pad(@getUTCSeconds())
 
-  if milliseconds and this.getUTCMilliseconds() > 0
-    result += '.' + pad(this.getUTCMilliseconds(), 3)
+  if milliseconds
+    result += '.' +
+      pad (if localTimezone then @getMilliseconds() else @getUTCMilliseconds()), 3
 
-  result + 'Z'
-
-
-
-# Date.prototype.toISO8601LocaleString
-#
-# Date instance method to format the date as ISO8601 / RFC 3339 string (in local
-# timezone format).
-#
-# Usage: d = new Date().toISO8601LocaleString()
-#          => "2010-07-25T19:51:31.427+08:00"
-# Parameters:
-#   separators   : include date/time separators? (default is true)
-#   milliseconds : include milliseconds? (default is true)
-Date::toISO8601LocaleString = (separators = true, milliseconds = true) ->
-  dateSeparator = if separators then '-' else ''
-  timeSeparator = if separators then ':' else ''
-
-  result =
-    this.getFullYear().toString() + dateSeparator +
-    pad(this.getMonth() + 1)      + dateSeparator +
-    pad(this.getDate())           + 'T'           +
-    pad(this.getHours())          + timeSeparator +
-    pad(this.getMinutes())        + timeSeparator +
-    pad(this.getSeconds())
-
-  if milliseconds and this.getMilliseconds() > 0
-    result += '.' + pad(this.getMilliseconds(), 3)
-
-  tzOffset = this.getTimezoneOffset()
-  if tzOffset >= 0
-    result += '-'
+  if localTimezone
+    tzOffset = @getTimezoneOffset()
+    if tzOffset >= 0
+      result += '-'
+    else
+      result += '+'
+      tzOffset *= -1
+    result + pad(tzOffset / 60) + timeSeparator + pad(tzOffset % 60)
   else
-    result += '+'
-    tzOffset *= -1
+    result + 'Z'
 
-  result + pad(tzOffset / 60) + timeSeparator + pad(tzOffset % 60)
+
+
+# Date.prototype.toISOString
+#
+# Format the date in UTC ISO 8601 / RFC 3339.
+#
+# Defined in ECMAScript 5.1 section 15.9.5.43. An implementation is set only if
+# the browser lacks native support.
+#
+# Examples
+#
+#   new Date().toISOString()
+#   // => "2010-07-25T11:51:31.427Z"
+#
+unless supportsISOFormatting
+  Date::toISOString = Date::toISO8601String
 
 
 
@@ -115,60 +137,77 @@ Date::toISO8601LocaleString = (separators = true, milliseconds = true) ->
 # Parses ISO8601 / RFC 3339 date strings to a Date object. Uses native browser
 # parsing if available.
 #
-# Usage: Date.parseISO8601("2010-07-20T15:00:00Z")
-if supportsISO8601   # With browser support, just use the default constructor
-  Date.parseISO8601 = (input) -> new Date(input)
+# input     - The String to parse.
+# useNative - Use browser native parsing if available? (default: true)
+#
+# Examples
+#
+#   Date.parseISO8601("2010-07-20T15:00:00Z")
+#   // => ....
+#
+ISO8601_PATTERN = ///
+  (\d\d\d\d)       # year
+  (-)?
+  (\d\d)           # month
+  (-)?
+  (\d\d)           # day
+  (T)?
+  (\d\d)           # hour
+  (:)?
+  (\d\d)?          # minute
+  (:)?
+  (\d\d)?          # seconds
+  ([\.,]\d+)?      # milliseconds
+  (
+    $|             # end of input = no timezone information
+    Z|             # UTC
+      ([+-])       # offset direction
+      (\d\d)       # offset hours
+      (:)?
+      (\d\d)?      # offset minutes
+  )
+///i
 
-else  # Otherwise, here's the polyfill
-  ISO8601_PATTERN = ///
-    (\d\d\d\d)       # year
-    (-)?
-    (\d\d)           # month
-    (-)?
-    (\d\d)           # day
-    (T)?
-    (\d\d)           # hour
-    (:)?
-    (\d\d)?          # minute
-    (:)?
-    (\d\d)?          # seconds
-    ([\.,]\d+)?      # milliseconds
-    (
-      $|             # end of input = no timezone information
-      Z|             # UTC
-        ([+-])       # offset direction
-        (\d\d)       # offset hours
-        (:)?
-        (\d\d)?      # offset minutes
-    )
-  ///i
+DECIMAL_SEPARATOR = String(1.5).charAt(1)
 
-  DECIMAL_SEPARATOR = String(1.5).charAt(1)
+parseISO8601 = (input) ->
+  type = Object::toString.call(input)
 
-  Date.parseISO8601 = (input) ->
-    return input if Object::toString.call(input) == '[object Date]'
-    return if typeof input != 'string'
+  # Return the input if it's already a Date instance
+  return input if type == '[object Date]'
 
-    if matches = input.match(ISO8601_PATTERN)
-      year    = parseInt(matches[1], 10)
-      month   = parseInt(matches[3], 10) - 1
-      day     = parseInt(matches[5], 10)
-      hour    = parseInt(matches[7], 10)
-      minutes = if matches[9]  then parseInt(matches[9], 10)  else 0
-      seconds = if matches[11] then parseInt(matches[11], 10) else 0
-      milliseconds =
-        if matches[12]
-          parseFloat(DECIMAL_SEPARATOR + matches[12][1..]) * 1000
-        else
-          0
+  # Can only parse Strings
+  return undefined unless type == '[object String]'
 
-      result = Date.UTC(year, month, day, hour, minutes, seconds, milliseconds)
-      if matches[13] && matches[14]  # Timezone adjustment
-        offset = matches[15] * 60
-        offset += parseInt(matches[17], 10) if (matches[17])
-        offset *= if matches[14] is '-' then -1 else 1
-        result -= offset * 60 * 1000
-      new Date(result)
+  if matches = input.match(ISO8601_PATTERN)
+    year    = parseInt(matches[1], 10)
+    month   = parseInt(matches[3], 10) - 1
+    day     = parseInt(matches[5], 10)
+    hour    = parseInt(matches[7], 10)
+    minutes = if matches[9]  then parseInt(matches[9], 10)  else 0
+    seconds = if matches[11] then parseInt(matches[11], 10) else 0
+    milliseconds =
+      if matches[12]
+        parseFloat(DECIMAL_SEPARATOR + matches[12][1..]) * 1000
+      else
+        0
+
+    result = Date.UTC(year, month, day, hour, minutes, seconds, milliseconds)
+    if matches[13] && matches[14]  # Timezone adjustment
+      offset = matches[15] * 60
+      offset += parseInt(matches[17], 10) if (matches[17])
+      offset *= if matches[14] is '-' then -1 else 1
+      result -= offset * 60 * 1000
+    new Date(result)
+
+if supportsISOParsing
+  Date.parseISO8601 = (input, useNative = true) ->
+    if useNative     # Use the default Date constructor, we have native support.
+      new Date(input)
+    else             # Force the polyfill.
+      parseISO8601 input
+else                 # No native support, always use polyfill.
+  Date.parseISO8601 = parseISO8601
 
 
 
@@ -177,16 +216,21 @@ else  # Otherwise, here's the polyfill
 # Parses date strings; returns time in milliseconds since the Unix epoch. See
 # http://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Date/parse
 #
-# This polyfills the standard Date.parse to support ISO8601 / RFC 3339 date
-# strings if the browser doesen't have native support.
+# This polyfills the standard Date.parse to support ISO 8601 / RFC 3339 date
+# strings only if the browser doesen't have native support.
 #
-# Usage: d = Date.parse("2010-07-20T15:00:00Z")
-#          => 1279638000000
-if typeof Date.parse != 'function'   # No built-in Date.parse, use our version
-  Date.parse = (input) -> Date.parseISO8601(input)?.getTime()
-else if not supportsISO8601     # No native ISO8601 support, chain our version
+# Examples
+#
+#   Date.parse("2010-07-20T15:00:00Z")
+#   // => 1279638000000
+#
+if Object::toString.call(Date.parse) != '[object Function]'
+  # No built-in Date.parse, use our version.
+  Date.parse = (input) -> parseISO8601(input)?.getTime()
+else if not supportsISOParsing
+  # No native ISO 8601 parsing, chain our version
   oldDateParse = Date.parse
   Date.parse = (input) ->
-    result = Date.parseISO8601(input)?.getTime()
+    result = parseISO8601(input)?.getTime()
     result = oldDateParse(input) if not result and oldDateParse
     result

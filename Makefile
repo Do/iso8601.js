@@ -5,3 +5,12 @@ all:
 
 clean:
 	rm out/*
+
+test:
+	TZ='PST+8' ./node_modules/.bin/mocha --reporter spec
+
+testbrowser:
+	echo "Browse to http://localhost:8000/test/browser/index.html"
+	python -m SimpleHTTPServer
+
+.PHONY: all clean test testbrowser
