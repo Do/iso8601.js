@@ -3,9 +3,9 @@
 * API changed to match [ECMAScript 5.1][ecmascript] ISO 8601 support for the
   Date object.
   * `Date.prototype.toISO8601UTCString` is now `Date.prototype.toISOString`.
-  * `Date.prototype.toISO8601LocaleString` has been removed. Similar formatting
-    is available by passing *true* to `Date.prototype.toISO8601String` which
-    allows other customizations as well.
+  * Removed `Date.prototype.toISO8601LocaleString`. Similar formatting is
+    available by passing *true* for *localTimezone* to
+    `Date.prototype.toISO8601String`.
 * ISO 8601 UTC formatting falls back to native support if available. Performance
   improvement on modern browsers for common usages.
 * Stricter browser test for native ISO 8601 parsing. Ensures timezone offsets

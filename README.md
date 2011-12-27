@@ -1,33 +1,31 @@
 iso8601.js
 ==========
 
-Partial ECMAScript 5.1 Date object cross-browser polyfill to add
-a [ISO 8601][iso8601] support to **Date.parse** and
-**Date.prototype.toISOString**. Originally based on Paul Gallagher's
-a [rfc3339date.js library][rfc3339date.js].
+Partial cross-browser polyfill to add [ISO 8601][iso8601] support to
+**Date.parse** and **Date.prototype.toISOString** as defined in ECMAScript 5.1.
+Originally based on Paul Gallagher's [rfc3339date.js library][rfc3339date.js].
 
 Supports only the subset of ISO 8601 described in
-a [ECMAScript 5.1 section 15.9.4.2][ecmascript], [RFC 3339][rfc3339], and the
-a [Date and Time Formats W3C NOTE][w3c-note].
+[ECMAScript 5.1 section 15.9.4.2][ecmascript], [RFC 3339][rfc3339], and the
+[Date and Time Formats W3C NOTE][w3c-note].
 
 
 ## Usage
 
-Download [iso8601.js][downloads] and include as usual before other scripts:
+Download [iso8601.js][downloads] and include before other scripts:
 
 ```html
 <script src="iso8601.min.js"></script>
 ```
 
-If you're using [Sprockets 2][sprockets], you can use the gem version of the
-library. Add to your Gemfile:
+Using [Sprockets 2][sprockets]? There's a gem version. Add to your Gemfile:
 
 ```ruby
 gem 'iso8601-js'
 ```
 
-If using Rails 3.1+, the library is automatically added to your asset paths.
-Otherwise add `ISO8601JS.assets_path` to your Sprockets environment:
+For Rails 3.1+, the library is automatically added to your asset paths. For
+other frameworks, add `ISO8601JS.assets_path` to your Sprockets environment:
 
 ```ruby
 env = Sprockets::Environment.new  # or however you initialize Sprockets
@@ -54,19 +52,18 @@ CoffeeScript:
 
 Parse ISO 8601 date/time strings two ways:
 
-* **Date.parseISO8601("...")** builds a Date instance from a string containing
-  an ISO 8610 date.
-* **Date.parse("...")** is polyfilled to attempt ISO 8601 parsing on the string
-  before using the browser's native `Date.parse`. Returns the number of
-  milliseconds between the Unix epoch and the date.
+* **Date.parseISO8601** creates a Date instance from a ISO 8601 date string.
+* **Date.parse** is polyfilled to attempt ISO 8601 parsing before using the
+  browser's native `Date.parse`. Returns the number of milliseconds between the
+  Unix epoch and the date.
 
 Examples:
 
 ```js
-console.log(Date.parseISO8601("2010-07-20T15:00:00Z"))
+Date.parseISO8601("2010-07-20T15:00:00Z")
 // => Tue Jul 20 2010 08:00:00 GMT-0700 (PDT)
 
-console.log(Date.parse("2010-07-20T15:00:00Z"));
+Date.parse("2010-07-20T15:00:00Z")
 // => 1307834445456
 ```
 
@@ -85,12 +82,12 @@ Format ISO 8601 date strings directly from Date instances:
 Examples:
 
 ```js
-var date = Date.parseISO8601("2010-07-20T15:00:00Z");
+var date = Date.parseISO8601("2010-07-20T15:00:00Z")
 
-console.log(date.toISOString());
+date.toISOString()
 // => "2010-07-20T15:00:00.000Z"
 
-console.log(date.toISO8601String(true, true, false));
+date.toISO8601String(true, true, false)
 // => "2010-07-20T08:00:00-07:00"
 ```
 
