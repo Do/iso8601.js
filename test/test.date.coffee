@@ -36,11 +36,14 @@ describe 'Date', ->
       assert.equal '2011-06-18T02:20:45.678-08:00', date.toISO8601String(true, true, true)
 
     it 'throws RangeError for Invalid Dates', ->
-      fn = -> new Date('not a date').toISO8601String()
+      invalidDate = new Date('not a date')     # Doesn't throw exception
+      fn = -> invalidDate.toISO8601String()    # Should throw exception when called
       expect(fn).to.throw RangeError
 
 
   describe 'parseISO8601', ->
+
+    # Using Date.parseISO8601(..., false) to parse without browser fallback.
 
     it 'parses UTC ISO 8601 strings', ->
       assert.equal date.getTime(), Date.parseISO8601('2011-06-18T10:20:45.678Z', false).getTime()
