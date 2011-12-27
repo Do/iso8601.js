@@ -34,19 +34,19 @@ env = Sprockets::Environment.new  # or however you initialize Sprockets
 env.append_path ISO8601JS.assets_path
 ```
 
-Then require it from the appropriate JavaScript or CoffeeScript files with the
-`= require` Sprockets directive:
+Include it in your JavaScript or CoffeeScript files with the `= require`
+Sprockets directive:
 
 JavaScript:
 
 ```javascript
-//= require iso8601-js
+//= require iso8601
 ```
 
 CoffeeScript:
 
 ```coffee-script
-#= require iso8601-js
+#= require iso8601
 ```
 
 
