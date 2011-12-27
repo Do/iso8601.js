@@ -36,5 +36,8 @@
     "uglify-js": "1.2.2",
     "mocha": "0.7.1",
     "chai": "0.1.4"
+  },
+  "scripts": {
+    "test": "mocha --reporter spec"
   }
 }
