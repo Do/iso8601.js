@@ -1,8 +1,36 @@
 {
   "name": "iso8601",
-  "description": "ISO8601 support for the Date object",
-  "version": "0.1.0",
-  "author": "Do <http://do.com>",
+  "description": "EC5.1 Date polyfill for ISO8601 support",
+  "version": "0.2.0",
+  "keywords": ["date", "time", "iso8601", "polyfill", "shim"],
+  "contributors": [
+    {
+      "name": "Gopal Patel",
+      "email": "nixme@stillhope.com"
+    },
+    {
+      "name": "David Yung",
+      "email": "azethoth@do.com"
+    },
+    {
+      "name": "Sai Tun",
+      "email": "sai@do.com"
+    }
+  ],
+  "homepage": "https://github.com/Do/iso8601.js",
+  "bugs": "https://github.com/Do/iso8601.js/issues",
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://raw.github.com/Do/iso8601.js/master/LICENSE"
+    }
+  ],
+  "repositories": [
+    {
+      "type": "git",
+      "url": "https://github.com/Do/iso8601.js.git"
+    }
+  ],
   "devDependencies": {
     "coffee-script": "1.2.0",
     "uglify-js": "1.2.2",

@@ -2,13 +2,13 @@ iso8601.js
 ==========
 
 Partial ECMAScript 5.1 Date object cross-browser polyfill to add
-[ISO 8601][iso8601] support to **Date.parse** and
+a [ISO 8601][iso8601] support to **Date.parse** and
 **Date.prototype.toISOString**. Originally based on Paul Gallagher's
-[rfc3339date.js library][rfc3339date.js].
+a [rfc3339date.js library][rfc3339date.js].
 
 Supports only the subset of ISO 8601 described in
-[ECMAScript 5.1 section 15.9.4.2][ecmascript], [RFC 3339][rfc3339], and the
-[Date and Time Formats W3C NOTE][w3c-note].
+a [ECMAScript 5.1 section 15.9.4.2][ecmascript], [RFC 3339][rfc3339], and the
+a [Date and Time Formats W3C NOTE][w3c-note].
 
 
 ## Usage
@@ -17,6 +17,36 @@ Download [iso8601.js][downloads] and include as usual before other scripts:
 
 ```html
 <script src="iso8601.min.js"></script>
+```
+
+If you're using [Sprockets 2][sprockets], you can use the gem version of the
+library. Add to your Gemfile:
+
+```ruby
+gem 'iso8601-js'
+```
+
+If using Rails 3.1+, the library is automatically added to your asset paths.
+Otherwise add `ISO8601JS.assets_path` to your Sprockets environment:
+
+```ruby
+env = Sprockets::Environment.new  # or however you initialize Sprockets
+env.append_path ISO8601JS.assets_path
+```
+
+Then require it from the appropriate JavaScript or CoffeeScript files with the
+`= require` Sprockets directive:
+
+JavaScript:
+
+```javascript
+//= require iso8601-js
+```
+
+CoffeeScript:
+
+```coffee-script
+#= require iso8601-js
 ```
 
 
@@ -88,6 +118,7 @@ Patches and bug reports are always welcome. Just send a
 [rfc3339]:        http://www.ietf.org/rfc/rfc3339.txt
 [w3c-note]:       http://www.w3.org/TR/NOTE-datetime
 [downloads]:      https://github.com/Do/iso8601.js/downloads
+[sprockets]:      https://github.com/sstephenson/sprockets
 [coffeescript]:   http://coffeescript.org/
 [pullrequests]:   https://github.com/Do/iso8601.js/pulls
 [issues]:         https://github.com/Do/iso8601.js/issues

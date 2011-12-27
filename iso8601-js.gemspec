@@ -9,8 +9,8 @@ Gem::Specification.new do |gem|
   gem.email         = ['nixme@stillhope.com', 'azethoth@do.com', 'sai@do.com']
   gem.license       = 'MIT'
   gem.homepage      = 'https://github.com/Do/iso8601.js'
-  gem.summary       = 'Sprockets asset gem for the iso8601.js polyfill library'
-  gem.description   = 'Adds ISO 8601 support to the JavaScript Date object for all browsers. This is a Sprockets gem to simplify including the client-side library.'
+  gem.summary       = 'Sprockets asset gem for the iso8601.js EC5.1 polyfill library'
+  gem.description   = 'Adds cross-browser ISO 8601 support to the JavaScript Date object based on EC5.1. This is a Sprockets gem to simplify inclusion of the client-side library.'
 
   gem.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   gem.files         = `git ls-files`.split("\n")
