@@ -1,5 +1,5 @@
-iso8601.js
-==========
+iso8601.js [![Build Status][buildstatus]][travis]
+=================================================
 
 Partial cross-browser polyfill to add [ISO 8601][iso8601] support to
 **Date.parse** and **Date.prototype.toISOString** as defined in ECMAScript 5.1.
@@ -109,6 +109,8 @@ Patches and bug reports are always welcome. Just send a
 
 
 
+[buildstatus]:    https://secure.travis-ci.org/Do/iso8601.js.png?branch=master "Build status"
+[travis]:         http://travis-ci.org/Do/iso8601.js
 [iso8601]:        http://en.wikipedia.org/wiki/ISO_8601
 [rfc3339date.js]: https://github.com/tardate/rfc3339date.js
 [ecmascript]:     http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf
