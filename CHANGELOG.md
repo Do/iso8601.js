@@ -1,3 +1,8 @@
+## 0.2.1 (2011-12-29)
+
+* Polyfills for **Date.prototype.toJSON** and **Date.now**.
+
+
 ## 0.2.0 (2011-12-27)
 
 * API changed to match [ECMAScript 5.1][ecmascript] ISO 8601 support for the
@@ -11,6 +16,7 @@
 * Stricter browser test for native ISO 8601 parsing. Ensures timezone offsets
   are correctly handled. Fixes Firefox issues.
 * Unit tests. Suite runs via node or browser harness.
+
 
 ## 0.1.0 (2011-12-23)
 

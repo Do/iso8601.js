@@ -55,7 +55,7 @@ Parse ISO 8601 date/time strings two ways:
 * **Date.parseISO8601** creates a Date instance from a ISO 8601 date string.
 * **Date.parse** is polyfilled to attempt ISO 8601 parsing before using the
   browser's native `Date.parse`. Returns the number of milliseconds between the
-  Unix epoch and the date.
+  Unix epoch and the date. [*EC5 15.9.4.2*][ec15.9.4.2]
 
 Examples:
 
@@ -72,7 +72,11 @@ Date.parse("2010-07-20T15:00:00Z")
 
 Format ISO 8601 date strings directly from Date instances:
 
-* **Date.prototype.toISOString** generates an ISO 8601 string in UTC.
+* **Date.prototype.toISOString** generates an ISO 8601 UTC string.
+  [*EC5 15.9.5.32*][ec15.9.5.43]. Throws `RangeError` for invalid dates.
+* **Date.prototype.toJSON** generates an ISO 8601 UTC string for use by
+  JSON.stringify. Returns `null` for invalid dates.
+  [*EC5 15.9.5.44*][ec15.9.5.44]
 * **Date.prototype.toISO8601String** generates an ISO 8601 string with
   formatting options:
   * *localTimezone*: Use local timezone with offset or UTC? Defaults to *false*.
@@ -87,8 +91,26 @@ var date = Date.parseISO8601("2010-07-20T15:00:00Z")
 date.toISOString()
 // => "2010-07-20T15:00:00.000Z"
 
+date.toJSON()
+// => "2010-07-20T15:00:00.000Z"
+
 date.toISO8601String(true, true, false)
 // => "2010-07-20T08:00:00-07:00"
+```
+
+
+## Other
+
+Other EC5 Date-related polyfills:
+
+* **Date.now** returns the number of milliseconds since the Unix epoch.
+  [*EC5 15.9.4.4*][ec15.9.4.4]
+
+Examples:
+
+```js
+Date.now()
+// => 1325174662624
 ```
 
 
@@ -118,6 +140,10 @@ Patches and bug reports are always welcome. Just send a
 [w3c-note]:       http://www.w3.org/TR/NOTE-datetime
 [downloads]:      https://github.com/Do/iso8601.js/downloads
 [sprockets]:      https://github.com/sstephenson/sprockets
+[ec15.9.4.2]:     http://es5.github.com/#x15.9.4.2
+[ec15.9.5.43]:    http://es5.github.com/#x15.9.5.43
+[ec15.9.5.44]:    http://es5.github.com/#x15.9.5.44
+[ec15.9.4.4]:     http://es5.github.com/#x15.9.4.4
 [coffeescript]:   http://coffeescript.org/
 [pullrequests]:   https://github.com/Do/iso8601.js/pulls
 [issues]:         https://github.com/Do/iso8601.js/issues

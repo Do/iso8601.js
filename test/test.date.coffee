@@ -1,8 +1,11 @@
-# Tests for the polyfill parsing and formatting functions. Browser native
-# support detection and usage untested.
+# Tests for the iso8601.js library
 #
 # For proper testing of timezone offsets, the suite must be run in the PST (non
 # daylight savings) timezone environment, e.g. TZ='PST+8'.
+#
+# Functions are tested directly where possible. Some of these tests won't test
+# the polyfill functions unless run in a non-ECMAScript 5.1 environment -
+# they'll just test native versions. Be sure to run the suite in older engines.
 #
 
 chai = @chai || require('chai')
@@ -12,8 +15,10 @@ require('../lib/iso8601') if require?
 
 describe 'Date', ->
 
-  # Date fixture: Sat Jun 18, 2011 02:20:45.678 PST
-  date = new Date(1308392445678)
+  # Date fixtures
+  date = new Date(1308392445678)         # Sat Jun 18, 2011 02:20:45.678 PST
+  invalidDate = new Date('not a date')   # Doesn't throw exception on creation
+
 
   describe 'toISO8601String', ->
 
@@ -36,9 +41,17 @@ describe 'Date', ->
       assert.equal '2011-06-18T02:20:45.678-08:00', date.toISO8601String(true, true, true)
 
     it 'throws RangeError for Invalid Dates', ->
-      invalidDate = new Date('not a date')     # Doesn't throw exception
       fn = -> invalidDate.toISO8601String()    # Should throw exception when called
       expect(fn).to.throw RangeError
+
+
+  describe 'toJSON', ->
+
+    it 'returns the UTC ISO 8601 string for valid dates', ->
+      assert.equal '2011-06-18T10:20:45.678Z', date.toJSON()
+
+    it 'returns null for invalid dates', ->
+      assert.equal null, invalidDate.toJSON()
 
 
   describe 'parseISO8601', ->
@@ -72,3 +85,8 @@ describe 'Date', ->
 
     it 'falls back to native Date.parse for non ISO strings', ->
       assert.equal 807926400000, Date.parse('Wed, 09 Aug 1995 00:00:00 GMT')
+
+
+  describe 'now', ->
+    it 'returns the current time in milliseconds since epoch', ->
+      assert.equal new Date().getTime(), Date.now()

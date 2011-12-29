@@ -47,9 +47,8 @@ pad = (number, length = 2) ->
     result = '0' + result
   result
 
-# Unit tests to check native ISO 8601 support
+# Unit test to check native ISO 8601 parsing support
 supportsISOParsing = Date.parse?('2011-06-11T23:20:45.456-0700') is 1307859645456
-supportsISOFormatting = Date::toISOString?
 
 
 
@@ -119,16 +118,35 @@ Date::toISO8601String = (localTimezone = false, separators = true, milliseconds 
 #
 # Format the date in UTC ISO 8601 / RFC 3339.
 #
-# Defined in ECMAScript 5.1 section 15.9.5.43. An implementation is set only if
-# the browser lacks native support.
+# Defined in ECMAScript 5.1 15.9.5.43. An implementation is set only if the
+# browser lacks native support.
 #
 # Examples
 #
 #   new Date().toISOString()
 #   // => "2010-07-25T11:51:31.427Z"
 #
-unless supportsISOFormatting
+unless Date::toISOString
   Date::toISOString = Date::toISO8601String
+
+
+
+# Date.prototype.toJSON
+#
+# Format the date in ISO 8601 UTC suitable for use by JSON.stringify. Returns
+# null for invalid dates. See ECMAScript 5.1 15.9.5.44.
+#
+# Examples
+#
+#   new Date().toJSON()
+#   // => "2010-07-25T11:51:31.427Z"
+#
+unless Date::toJSON
+  Date::toJSON = (key) ->
+    if isFinite(@valueOf())
+      @toISOString()
+    else
+      null  # Spec requires returning null for non-finite values
 
 
 
@@ -234,3 +252,18 @@ else if not supportsISOParsing
     result = parseISO8601(input)?.getTime()
     result = oldDateParse(input) if not result and oldDateParse
     result
+
+
+
+# Date.now
+#
+# Returns the Number value (milliseconds since the Unix epoch) of the current
+# time. See ECMAScript 5.1 15.9.4.4.
+#
+# Examples
+#
+#   Date.now()
+#   // => 1325174662624
+#
+unless Date.now
+  Date.now = -> new Date().getTime()
